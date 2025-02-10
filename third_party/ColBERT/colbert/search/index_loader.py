@@ -46,14 +46,14 @@ class IndexLoader:
 
     def _load_doclens(self):
         doclens = []
-
+        
         print_message("#> Loading doclens...")
-
-        for chunk_idx in tqdm.tqdm(range(self.num_chunks)):
+        
+        for chunk_idx in range(self.num_chunks):
             with open(os.path.join(self.index_path, f'doclens.{chunk_idx}.json')) as f:
                 chunk_doclens = ujson.load(f)
                 doclens.extend(chunk_doclens)
-
+                
         self.doclens = torch.tensor(doclens)
 
     def _load_embeddings(self):

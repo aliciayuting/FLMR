@@ -31,14 +31,12 @@ class Searcher:
         default_index_root = initial_config.index_root_
         self.index = os.path.join(default_index_root, index)
         self.index_config = ColBERTConfig.load_from_index(self.index)
-
         self.checkpoint = checkpoint or self.index_config.checkpoint
         self.checkpoint_config = ColBERTConfig.load_from_checkpoint(self.checkpoint)
         self.config = ColBERTConfig.from_existing(self.checkpoint_config, self.index_config, initial_config)
 
         self.collection = Collection.cast(collection or self.config.collection)
         self.configure(checkpoint=self.checkpoint, collection=self.collection)
-
         # query_tokenizer = FLMRQueryEncoderTokenizer.from_pretrained(self.config.checkpoint, subfolder="query_tokenizer")
         # context_tokenizer = FLMRContextEncoderTokenizer.from_pretrained(self.config.checkpoint, subfolder="context_tokenizer")
         # self.checkpoint = FLMRModelForIndexing.from_pretrained(self.config.checkpoint, 
@@ -50,7 +48,6 @@ class Searcher:
         # if use_gpu:
         #     self.checkpoint = self.checkpoint.cuda()
         self.ranker = IndexScorer(self.index, use_gpu)
-
         print_memory_stats()
 
     def configure(self, **kw_args):
@@ -79,8 +76,9 @@ class Searcher:
 
     def _search_all_Q(self, queries, Q, k, filter_fn=None, progress=True, remove_zero_tensors=False, batch_size=None):
         all_scored_pids = [list(zip(*self.dense_search(Q[query_idx:query_idx+1], k, filter_fn=filter_fn, remove_zero_tensors=remove_zero_tensors, batch_size=batch_size)))
-                        for query_idx in tqdm(range(Q.size(0)), disable=not progress)]
-        
+                        for query_idx in range(Q.size(0))]
+        # all_scored_pids = [list(zip(*self.dense_search(Q[query_idx:query_idx+1], k, filter_fn=filter_fn, remove_zero_tensors=remove_zero_tensors, batch_size=batch_size)))
+        #                 for query_idx in tqdm(range(Q.size(0)), disable=not progress)]
 
         data = {qid: val for qid, val in zip(queries.keys(), all_scored_pids)}
 

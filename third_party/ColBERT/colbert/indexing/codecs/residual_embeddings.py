@@ -36,7 +36,8 @@ class ResidualEmbeddings:
 
         print_message("#> Loading codes and residuals...")
 
-        for chunk_idx in tqdm.tqdm(chunk_idxs):
+        # for chunk_idx in tqdm.tqdm(chunk_idxs):
+        for chunk_idx in chunk_idxs:
             chunk = cls.load(index_path, chunk_idx)
 
             codes_endpos = codes_offset + chunk.codes.size(0)
